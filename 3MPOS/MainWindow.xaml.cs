@@ -23,7 +23,7 @@ namespace _3MPOS
         public MainWindow()
         {
             InitializeComponent();
-
+            //test
         }
     }
 }
