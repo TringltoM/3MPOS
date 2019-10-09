@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Data;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Threading;
 
 namespace View
 {
@@ -62,11 +63,12 @@ namespace View
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
             if (productGrid.SelectedItem != null)
             {
                 selectedProductList.Remove((Product)productGrid.SelectedItem);
+                removeButton.IsEnabled = false;
             }
         }
 
@@ -81,8 +83,11 @@ namespace View
 
             block.MouseLeftButtonUp += (sender, e) =>
             {
-                TextBlock b = sender as TextBlock;
-                b.Background = Brushes.PeachPuff;
+                quickSearchTextBox.Text = block.Text;
+                resultStack.Children.Clear();
+                var border = (resultStack.Parent as ScrollViewer).Parent as Border;
+                addButton.IsEnabled = true;
+                border.Visibility = Visibility.Collapsed;
             };
 
             block.MouseLeave += (sender, e) =>
@@ -98,10 +103,11 @@ namespace View
         }
         private void QuickSearchTextBox_KeyUp(object sender, KeyEventArgs e)
         {
+
             bool found = false;
             var border = (resultStack.Parent as ScrollViewer).Parent as Border;
             var data = listOfAllProducts;
-
+            
             string query = (sender as TextBox).Text;
 
             if (query.Length == 0 || query == "Quick Search")
@@ -133,15 +139,41 @@ namespace View
             
         }
 
-        private void ResultStack_GotFocus(object sender, RoutedEventArgs e)
+        private void AddButton_Click(object sender, RoutedEventArgs e)
         {
-            foreach (TextBlock t in resultStack.Children)
+            if(quickSearchTextBox.Text != "Quick Search" && quickSearchTextBox.Text != null && quickSearchTextBox.Text != string.Empty)
             {
-                if (t.IsFocused)
+                Product p = listOfAllProducts.Find(x => x.Name == quickSearchTextBox.Text);
+                if (p != null)
                 {
-                    MessageBox.Show(t.Name);
+                    selectedProductList.Add(p);
+                    quickSearchTextBox.Text = "Quick Search";
+                    addButton.IsEnabled = false;
                 }
             }
+        }
+
+        private void ProductGrid_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (!removeButton.IsMouseOver)
+            {
+                productGrid.SelectedItem = null;
+                removeButton.IsEnabled = false;
+            }
+            
+        }
+
+        private void ProductGrid_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (productGrid.SelectedCells != null)
+            {
+                removeButton.IsEnabled = true;
+            }
+        }
+
+        private void SearchAllButton_Click(object sender, RoutedEventArgs e)
+        {
+            new SearchAllProductsView().ShowDialog();
         }
     }
 
