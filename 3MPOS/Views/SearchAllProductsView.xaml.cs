@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace View
+namespace _3MPOS
 {
     /// <summary>
     /// Interaction logic for SearchAllProductsView.xaml
