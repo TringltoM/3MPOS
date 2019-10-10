@@ -26,7 +26,7 @@ namespace View
     {
         ObservableCollection<Product> selectedProductList = new ObservableCollection<Product>();
 
-        List<Product> listOfAllProducts = new List<Product>();
+        ObservableCollection<Product> listOfAllProducts = new ObservableCollection<Product>();
 
         public BillUIView()
         {
@@ -41,7 +41,6 @@ namespace View
             {
                 listOfAllProducts.Add(new Product { Name = $"Number {i} product", Price = (i + 3) / 2.9, Description = $"Description of product {i}"});
             }
-
             productGrid.DataContext = selectedProductList;
         }
 
@@ -57,6 +56,10 @@ namespace View
 
         private void QuickSearchTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
+            if (searchBorder.IsMouseOver == false)
+            {
+                searchBorder.Visibility = Visibility.Collapsed;
+            }
             if (quickSearchTextBox.Text == string.Empty)
             {
                 quickSearchTextBox.Text = "Quick Search";
@@ -65,9 +68,12 @@ namespace View
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
         {
-            if (productGrid.SelectedItem != null)
+            if (productGrid.SelectedItems != null && productGrid.SelectedItems.Count != 0)
             {
-                selectedProductList.Remove((Product)productGrid.SelectedItem);
+                while(productGrid.SelectedItems.Count != 0)
+                {
+                    selectedProductList.Remove((Product)productGrid.SelectedItems[0]);
+                }
                 removeButton.IsEnabled = false;
             }
         }
@@ -97,8 +103,6 @@ namespace View
             };
 
             resultStack.Children.Add(block);
-
-            
 
         }
         private void QuickSearchTextBox_KeyUp(object sender, KeyEventArgs e)
@@ -143,7 +147,7 @@ namespace View
         {
             if(quickSearchTextBox.Text != "Quick Search" && quickSearchTextBox.Text != null && quickSearchTextBox.Text != string.Empty)
             {
-                Product p = listOfAllProducts.Find(x => x.Name == quickSearchTextBox.Text);
+                Product p = listOfAllProducts.FirstOrDefault(x => x.Name == quickSearchTextBox.Text);
                 if (p != null)
                 {
                     selectedProductList.Add(p);
@@ -173,7 +177,35 @@ namespace View
 
         private void SearchAllButton_Click(object sender, RoutedEventArgs e)
         {
-            new SearchAllProductsView().ShowDialog();
+            SearchAllProductsView sapw = new SearchAllProductsView(listOfAllProducts);
+            
+            if (sapw.ShowDialog() == true)
+            {
+                if (sapw.listOfChosenProducts != null && sapw.listOfChosenProducts.Count != 0)
+                {
+                    foreach(Product p in sapw.listOfChosenProducts)
+                    {
+                        selectedProductList.Add(p);
+                    }
+                }
+            }
+        }
+
+        private void searchBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (quickSearchTextBox.IsFocused == false)
+            {
+                (sender as Border).Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private void ProductGrid_CurrentCellChanged(object sender, EventArgs e)
+        {
+            
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                MessageBox.Show("Implement this!");
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,9 +21,26 @@ namespace View
     /// </summary>
     public partial class SearchAllProductsView : Window
     {
-        public SearchAllProductsView()
+        public ObservableCollection<Product> listOfChosenProducts = new ObservableCollection<Product>();
+        ObservableCollection<Product> listOfAllProducts;
+        public SearchAllProductsView(ObservableCollection<Product> listOfAll)
         {
+            listOfAllProducts = listOfAll;
             InitializeComponent();
+            productDataGrid.ItemsSource = listOfAllProducts;
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (productDataGrid.SelectedItems != null || productDataGrid.SelectedItems.Count == 0)
+            {
+                foreach(var item in productDataGrid.SelectedItems)
+                {
+                    listOfChosenProducts.Add((Product)item);
+                }
+            }
+            DialogResult = true;
+            Close();
         }
     }
 }
