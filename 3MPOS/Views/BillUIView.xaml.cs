@@ -17,7 +17,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 
-namespace View
+namespace _3MPOS
 {
     /// <summary>
     /// Interaction logic for BillUIView.xaml

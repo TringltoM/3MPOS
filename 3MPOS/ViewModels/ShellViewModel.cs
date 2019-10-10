@@ -7,11 +7,12 @@ using Caliburn.Micro;
 
 namespace _3MPOS
 {
-    public class LoginViewModel: Screen
+    class ShellViewModel : Conductor<Screen>
     {
-        public void Login()
+        public ShellViewModel()
         {
-            ((IConductor)Parent).ActivateItem(new BillUIViewModel());
+            ActivateItem(new LoginViewModel());
         }
+
     }
 }
